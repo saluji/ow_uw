@@ -1,0 +1,11 @@
+Model Information:
+* title:	Rootieboodie
+* source:	https://sketchfab.com/3d-models/rootieboodie-fcdd96f156c947ad81537f2759dff70d
+* author:	Rick Hoppmann (https://sketchfab.com/tinyruin)
+
+Model License:
+* license type:	CC-BY-NC-4.0 (http://creativecommons.org/licenses/by-nc/4.0/)
+* requirements:	Author must be credited. No commercial use.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Rootieboodie" (https://sketchfab.com/3d-models/rootieboodie-fcdd96f156c947ad81537f2759dff70d) by Rick Hoppmann (https://sketchfab.com/tinyruin) licensed under CC-BY-NC-4.0 (http://creativecommons.org/licenses/by-nc/4.0/)
