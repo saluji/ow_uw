@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class WaterEffect : MonoBehaviour
+public class Effect : MonoBehaviour
 {
     [SerializeField] float scrollSpeed = 0.5f;
     [SerializeField] float x;
