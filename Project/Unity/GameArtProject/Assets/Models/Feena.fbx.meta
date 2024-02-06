@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 25e4a33fe1f10c448a6e7e545daef1c4
+guid: 27151ab85ee3da04e9296828bb6589de
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
@@ -8,72 +8,137 @@ ModelImporter:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: Eye Fee
-    second: {fileID: 2100000, guid: 38e3f10859bb15c44be0889e0e4a1946, type: 2}
+    second: {fileID: 2100000, guid: c1d290447450e344183a16518c1fcef9, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: HairFee
-    second: {fileID: 2100000, guid: 00d7f9727eb4d744089241576178ae65, type: 2}
+    second: {fileID: 2100000, guid: d8bd29612e36b8b4a9a23949b8b9fa43, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: Mat.2
-    second: {fileID: 2100000, guid: 2f62a4b5589add5499a593f2b1066bbf, type: 2}
+    second: {fileID: 2100000, guid: 407a0854c6599174f939b719e08d2a9c, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: ShoeBottom
-    second: {fileID: 2100000, guid: 5c0fe71161d4fdd478206e497c963bdf, type: 2}
+    second: {fileID: 2100000, guid: dc9c0be0303f474458785ba6b7becd41, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: ShoesFee
-    second: {fileID: 2100000, guid: d33ad86e57e0e35419947fbaa7e9fe96, type: 2}
+    second: {fileID: 2100000, guid: 05fd869196430a24bb84bfe6cf0627dd, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: SkinFee
-    second: {fileID: 2100000, guid: 78e5420f11c6d0c49b7f1647e90a41ca, type: 2}
+    second: {fileID: 2100000, guid: 1df993dedb6be244b9652fba85d31bc4, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: Staff OW
-    second: {fileID: 2100000, guid: 34fbf9421a5842341972b000736bf589, type: 2}
+    second: {fileID: 2100000, guid: 22fef0067768c2d409ff30c2a1cd1537, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: WingsFee
-    second: {fileID: 2100000, guid: a53a06cbb8e17044abdc17d5a4a07f57, type: 2}
+    second: {fileID: 2100000, guid: 84c085f29eaed3e41808ba0e4cea1dee, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
       name: tSHIRTFeena
-    second: {fileID: 2100000, guid: 1631db528e733874dbc4cbda6d266cb4, type: 2}
+    second: {fileID: 2100000, guid: 6754e276c33b3954894abd598e4ccf01, type: 2}
   - first:
       type: UnityEngine:Texture2D
       assembly: UnityEngine.CoreModule
-      name: Eye Fee_Color
-    second: {fileID: 2800000, guid: 825ebb5ffb811c84ab2e9bedaad45622, type: 3}
+      name: HairFee_Color
+    second: {fileID: 2800000, guid: fb290423a3b2d804c917452720968552, type: 3}
   - first:
       type: UnityEngine:Texture2D
       assembly: UnityEngine.CoreModule
-      name: ShoeBottom_Farbe_1
-    second: {fileID: 2800000, guid: 1f6ad07b85e4da940ab986c29c70da8c, type: 3}
+      name: HairFee_Farbe_1
+    second: {fileID: 2800000, guid: 6c5750bc814917043bedcb006af5cde6, type: 3}
   - first:
       type: UnityEngine:Texture2D
       assembly: UnityEngine.CoreModule
-      name: ShortsFee_Color
-    second: {fileID: 2800000, guid: 765d4e15c063c7541bd20c17c82141c3, type: 3}
+      name: Mat.1_Color
+    second: {fileID: 2800000, guid: 497aecae91515dc4b85487a96950524f, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Mat_1
+    second: {fileID: 2800000, guid: 56fc7dcf127d9264390e42b50d8cc052, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Mat_2
+    second: {fileID: 2800000, guid: ee30723408be6c84a9b685106b06857e, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Mat_Color
+    second: {fileID: 2800000, guid: b26930911436f7148919428a07409b07, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Mat_Farbe_1
+    second: {fileID: 2800000, guid: 82ed2ae4418744842858e7e225d4ab0c, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: PantsOrc_Farbe_1
+    second: {fileID: 2800000, guid: ba96fb9438f32744888eac1ed1c766d8, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: PantsOrc_Farbe_2
+    second: {fileID: 2800000, guid: 3ea92eb7f8e978946996e81d8f056dd7, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: ShoeOrc_Farbe_2
+    second: {fileID: 2800000, guid: dff32e1489e0e454f9ebba72a52e9146, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: ShoesFee_Color
+    second: {fileID: 2800000, guid: 6e8d2f2613270ed4ea681be21e16ec92, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: ShoesFee_Farbe_1
+    second: {fileID: 2800000, guid: c347c9a4237ee8b40a253b96db9547de, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: SkinFee_Color
+    second: {fileID: 2800000, guid: e0789448f98983b47b5ee1e118181eb4, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: SkinOrc_Farbe_2
+    second: {fileID: 2800000, guid: ca081daa1298b1a46b627a536db89d7b, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Tshirt ORC2_Farbe_1
+    second: {fileID: 2800000, guid: 0e4d842401a49814ca15d02f28e3b1e2, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: TshirtOrc_Farbe_2
+    second: {fileID: 2800000, guid: 9d9c0499d1269a443afde2c470fa6cd1, type: 3}
   - first:
       type: UnityEngine:Texture2D
       assembly: UnityEngine.CoreModule
       name: WingsFee_Farbe_1
-    second: {fileID: 2800000, guid: f8fbb8742c3ff014e8802ed425f84c72, type: 3}
+    second: {fileID: 2800000, guid: f3f9cf19fa47c1b4bac86f09da9281b7, type: 3}
   materials:
     materialImportMode: 2
     materialName: 0
     materialSearch: 1
-    materialLocation: 1
+    materialLocation: 0
   animations:
     legacyGenerateAnimations: 4
     bakeSimulation: 0
@@ -136,7 +201,7 @@ ModelImporter:
     strictVertexDataChecks: 0
   tangentSpace:
     normalSmoothAngle: 60
-    normalImportMode: 0
+    normalImportMode: 1
     tangentImportMode: 2
     normalCalculationMode: 4
     legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 0
