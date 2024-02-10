@@ -3,12 +3,9 @@
     "SubFolders": true,
     "OverwriteConfig": false,
     "LoadAllShaders": false,
-    "CustomOutputPath": "/JMO Assets/Toony Colors Pro/Shaders Generated/",
+    "CustomOutputPath": "JMO Assets\\Toony Colors Pro\\Shaders Generated",
     "LastImplementationExportImportPath": "C:/Users/oudomvylay19908/Documents/GitHub/gameart/Project/Unity/GameArtProject/Assets",
-    "OpenedFoldouts": [
-        "SURFACE",
-        "LIGHTING"
-    ],
+    "OpenedFoldouts": [],
     "UseCustomFont": true,
     "CustomFont": {
         "fileID": 12800000,

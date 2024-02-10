@@ -3,7 +3,82 @@ guid: a10a9e96ca92c954d8daf6af69cd34de
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Ball UW
+    second: {fileID: 2100000, guid: 306d84c0c2c0b004aab5d007528d7650, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Bench UW
+    second: {fileID: 2100000, guid: cbc86bbecd1ac7246aa167ab75176113, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Field UW
+    second: {fileID: 2100000, guid: feb9027c6fb0dd54e81033956971a084, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Flower Stem UW
+    second: {fileID: 2100000, guid: 3ab5e9d4de15b8641bc6c7914b213dea, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Flower UW
+    second: {fileID: 2100000, guid: f7e5904005b7ce145ab2e11a87d1c112, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: GroundUW
+    second: {fileID: 2100000, guid: 8cc6637de2be83249a028df0a869f866, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Lava
+    second: {fileID: 2100000, guid: a55970df5fdcdfc48b276d60d03ca567, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mace UW
+    second: {fileID: 2100000, guid: 5b83f3d3a49291641a446b97d5341c37, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Net UW
+    second: {fileID: 2100000, guid: 0736599c76fb3424fae035a49d0f6ee9, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Numbers UW
+    second: {fileID: 2100000, guid: b8c27c6a0399d7344bd2b6ad55f86294, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Rock
+    second: {fileID: 2100000, guid: 7ad632621d415854abe39bd3034837a0, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Scoreboard UW
+    second: {fileID: 2100000, guid: ded92bba3bb61e2489f5e72b98273a91, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Spike
+    second: {fileID: 2100000, guid: f3a05729fdfaf074b98a6495a7381795, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Staff UW
+    second: {fileID: 2100000, guid: 3bebff9e63ed67142a9f3fffed165c75, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Stand UW
+    second: {fileID: 2100000, guid: d5c5df54c61fa1e49aac07cdbec3dd75, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
