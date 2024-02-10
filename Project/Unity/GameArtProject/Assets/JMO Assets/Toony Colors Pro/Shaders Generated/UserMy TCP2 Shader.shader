@@ -67,9 +67,6 @@ Shader "Toony Colors Pro 2/User/My TCP2 Shader"
 		_VerticalFogSmoothness ("Smoothness", Float) = 0.5
 		_VerticalFogColor ("Fog Color", Color) = (0.5,0.5,0.5,1)
 		[TCP2Separator]
-		[TCP2HeaderHelp(Silhouette Pass)]
-		_SilhouetteColor ("Silhouette Color", Color) = (0,0,0,0.33)
-		[TCP2Separator]
 		
 		[TCP2HeaderHelp(Outline)]
 		_OutlineWidth ("Width", Range(0.1,4)) = 1
@@ -121,7 +118,6 @@ Shader "Toony Colors Pro 2/User/My TCP2 Shader"
 		float _VerticalFogThreshold;
 		float _VerticalFogSmoothness;
 		fixed4 _VerticalFogColor;
-		fixed4 _SilhouetteColor;
 		float _Parallax;
 		float _BumpScale;
 		float4 _MainTex_ST;
@@ -340,79 +336,6 @@ Shader "Toony Colors Pro 2/User/My TCP2 Shader"
 
 		ENDCG
 		// Outline Include End
-		// Silhouette Pass
-		Pass
-		{
-			Name "Silhouette"
-			Tags
-			{
-				"LightMode"="ForwardBase"
-			}
-			Blend SrcAlpha OneMinusSrcAlpha
-			ZTest Greater
-			ZWrite Off
-
-			Stencil
-			{
-				Ref 1
-				Comp NotEqual
-				Pass Replace
-				ReadMask 1
-				WriteMask 1
-			}
-
-			CGPROGRAM
-			#pragma vertex vertex_silhouette
-			#pragma fragment fragment_silhouette
-			#pragma multi_compile_instancing
-			#pragma target 3.0
-
-			struct appdata_sil
-			{
-				float4 vertex : POSITION;
-				float3 normal : NORMAL;
-				UNITY_VERTEX_INPUT_INSTANCE_ID
-			};
-
-			struct v2f_sil
-			{
-				float4 vertex : SV_POSITION;
-				UNITY_VERTEX_OUTPUT_STEREO
-				float4 screenPosition : TEXCOORD0;
-				float3 pack1 : TEXCOORD1; /* pack1.xyz = worldPos */
-			};
-
-			v2f_sil vertex_silhouette (appdata_sil v)
-			{
-				v2f_sil output;
-				UNITY_INITIALIZE_OUTPUT(v2f_sil, output);
-				UNITY_SETUP_INSTANCE_ID(v);
-				UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(output);
-
-				float3 worldPos = mul(unity_ObjectToWorld, v.vertex).xyz;
-				output.pack1.xyz = worldPos;
-				output.vertex = UnityObjectToClipPos(v.vertex);
-				float4 clipPos = output.vertex;
-
-				// Screen Position
-				float4 screenPos = ComputeScreenPos(clipPos);
-				output.screenPosition = screenPos;
-				COMPUTE_EYEDEPTH(output.screenPosition.z);
-
-				return output;
-			}
-
-			half4 fragment_silhouette (v2f_sil input) : SV_Target
-			{
-
-				// Shader Properties Sampling
-				float4 __silhouetteColor = ( _SilhouetteColor.rgba );
-
-				return __silhouetteColor;
-			}
-			ENDCG
-		}
-
 		// Main Surface Shader
 		ZWrite On
 		ZTest LEqual
@@ -830,5 +753,5 @@ Shader "Toony Colors Pro 2/User/My TCP2 Shader"
 	CustomEditor "ToonyColorsPro.ShaderGenerator.MaterialInspector_SG2"
 }
 
-/* TCP_DATA u config(ver:"2.9.9";unity:"2022.3.7f1";tmplt:"SG2_Template_Default";features:list["UNITY_5_4","UNITY_5_5","UNITY_5_6","UNITY_2017_1","UNITY_2018_1","UNITY_2018_2","UNITY_2018_3","UNITY_2019_1","UNITY_2019_2","UNITY_2019_3","UNITY_2019_4","UNITY_2020_1","UNITY_2021_1","UNITY_2021_2","UNITY_2022_2","SKETCH_PROGRESSIVE","DIFFUSE_TINT","TEXTURED_THRESHOLD","SHADOW_LINE","OUTLINE","OUTLINE_CLIP_SPACE","OUTLINE_LIGHTING_VERT","OUTLINE_LIGHTING","RAMP_BANDS_CRISP_NO_AA","EMISSION","SUBSURFACE_SCATTERING","OCCLUSION","BUMP","BUMP_SCALE","PARALLAX","PASS_SILHOUETTE","SILHOUETTE_STENCIL","DISSOLVE","DISSOLVE_SHADER_FEATURE","DISSOLVE_CLIP","VERTICAL_FOG","DEPTH_BUFFER_COLOR","CULLING","ZTEST","ZWRITE","ENABLE_LIGHTMAPS","ENABLE_FOG","DISABLE_BATCHING","ENABLE_LPPV","ENABLE_DITHER_LOD"];flags:list["addshadow"];flags_extra:dict[];keywords:dict[RENDER_TYPE="Opaque",RampTextureDrawer="[TCP2Gradient]",RampTextureLabel="Ramp Texture",SHADER_TARGET="3.0",BASEGEN_ALBEDO_DOWNSCALE="1",BASEGEN_MASKTEX_DOWNSCALE="1/2",BASEGEN_METALLIC_DOWNSCALE="1/4",BASEGEN_SPECULAR_DOWNSCALE="1/4",BASEGEN_DIFFUSEREMAPMIN_DOWNSCALE="1/4",BASEGEN_MASKMAPREMAPMIN_DOWNSCALE="1/4"];shaderProperties:list[,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,sp(name:"Face Culling";imps:list[imp_enum(value_type:0;value:2;enum_type:"ToonyColorsPro.ShaderGenerator.Culling";guid:"ba6ed26f-1db5-43f0-a9c8-1a7644ad00cf";op:Multiply;lbl:"Face Culling";gpu_inst:False;dots_inst:False;locked:False;impl_index:0)];layers:list[];unlocked:list[];layer_blend:dict[];custom_blend:dict[];clones:dict[];isClone:False)];customTextures:list[];codeInjection:codeInjection(injectedFiles:list[];mark:False);matLayers:list[]) */
-/* TCP_HASH caabf9b12b6e96e2ee9d9a5439d2f38f */
+/* TCP_DATA u config(ver:"2.9.9";unity:"2022.3.7f1";tmplt:"SG2_Template_Default";features:list["UNITY_5_4","UNITY_5_5","UNITY_5_6","UNITY_2017_1","UNITY_2018_1","UNITY_2018_2","UNITY_2018_3","UNITY_2019_1","UNITY_2019_2","UNITY_2019_3","UNITY_2019_4","UNITY_2020_1","UNITY_2021_1","UNITY_2021_2","UNITY_2022_2","SKETCH_PROGRESSIVE","DIFFUSE_TINT","TEXTURED_THRESHOLD","SHADOW_LINE","OUTLINE","OUTLINE_CLIP_SPACE","OUTLINE_LIGHTING_VERT","OUTLINE_LIGHTING","RAMP_BANDS_CRISP_NO_AA","EMISSION","SUBSURFACE_SCATTERING","OCCLUSION","BUMP_SCALE","PARALLAX","SILHOUETTE_STENCIL","DISSOLVE_SHADER_FEATURE","VERTICAL_FOG","DEPTH_BUFFER_COLOR","CULLING","ZTEST","ZWRITE","ENABLE_LIGHTMAPS","ENABLE_FOG","DISABLE_BATCHING","ENABLE_LPPV","ENABLE_DITHER_LOD","DISSOLVE","DISSOLVE_CLIP","BUMP"];flags:list["addshadow"];flags_extra:dict[];keywords:dict[RENDER_TYPE="Opaque",RampTextureDrawer="[TCP2Gradient]",RampTextureLabel="Ramp Texture",SHADER_TARGET="3.0",BASEGEN_ALBEDO_DOWNSCALE="1",BASEGEN_MASKTEX_DOWNSCALE="1/2",BASEGEN_METALLIC_DOWNSCALE="1/4",BASEGEN_SPECULAR_DOWNSCALE="1/4",BASEGEN_DIFFUSEREMAPMIN_DOWNSCALE="1/4",BASEGEN_MASKMAPREMAPMIN_DOWNSCALE="1/4"];shaderProperties:list[,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,sp(name:"Face Culling";imps:list[imp_enum(value_type:0;value:2;enum_type:"ToonyColorsPro.ShaderGenerator.Culling";guid:"ba6ed26f-1db5-43f0-a9c8-1a7644ad00cf";op:Multiply;lbl:"Face Culling";gpu_inst:False;dots_inst:False;locked:False;impl_index:0)];layers:list[];unlocked:list[];layer_blend:dict[];custom_blend:dict[];clones:dict[];isClone:False)];customTextures:list[];codeInjection:codeInjection(injectedFiles:list[];mark:False);matLayers:list[]) */
+/* TCP_HASH dbd360b76079ef87f7b4979e73eca125 */
