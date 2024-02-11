@@ -56,6 +56,12 @@ Shader "Toony Colors Pro 2/User/My TCP2 Shader"
 		[TCP2ColorNoAlpha] _DepthColor ("Depth Color", Color) = (0,0,1,1)
 		[PowerSlider(5.0)] _DepthColorDistance ("Depth Color Distance", Range(0.01,3)) = 0.5
 		
+		[TCP2HeaderHelp(Dissolve)]
+		[Toggle(TCP2_DISSOLVE)] _UseDissolve ("Enable Dissolve", Float) = 0
+		[NoScaleOffset] _DissolveMap ("Map", 2D) = "gray" {}
+		_DissolveValue ("Value", Range(0,1)) = 0.5
+		[TCP2Separator]
+		
 		[TCP2HeaderHelp(Vertical Fog)]
 		_VerticalFogThreshold ("Y Threshold", Float) = 0
 		_VerticalFogSmoothness ("Smoothness", Float) = 0.5
@@ -82,6 +88,7 @@ Shader "Toony Colors Pro 2/User/My TCP2 Shader"
 		{
 			"DisableBatching" = "True"
 			"RenderType"="Opaque"
+			"Queue"="AlphaTest"
 		}
 
 		CGINCLUDE
@@ -96,6 +103,7 @@ Shader "Toony Colors Pro 2/User/My TCP2 Shader"
 		#define TCP2_TEX2D_SAMPLE_LOD(tex, samplertex, coord, lod)	UNITY_SAMPLE_TEX2D_SAMPLER_LOD(tex, samplertex, coord, lod)
 
 		// Shader Properties
+		TCP2_TEX2D_WITH_SAMPLER(_DissolveMap);
 		TCP2_TEX2D_WITH_SAMPLER(_ParallaxMap);
 		TCP2_TEX2D_WITH_SAMPLER(_BumpMap);
 		TCP2_TEX2D_WITH_SAMPLER(_MainTex);
@@ -106,6 +114,7 @@ Shader "Toony Colors Pro 2/User/My TCP2 Shader"
 		// Shader Properties
 		float _OutlineWidth;
 		fixed4 _OutlineColorVertex;
+		float _DissolveValue;
 		float _VerticalFogThreshold;
 		float _VerticalFogSmoothness;
 		fixed4 _VerticalFogColor;
@@ -166,9 +175,8 @@ Shader "Toony Colors Pro 2/User/My TCP2 Shader"
 		{
 			float4 vertex : POSITION;
 			float3 normal : NORMAL;
-			#if TCP2_UV1_AS_NORMALS
 			float4 texcoord0 : TEXCOORD0;
-		#elif TCP2_UV2_AS_NORMALS
+			#if TCP2_UV2_AS_NORMALS
 			float4 texcoord1 : TEXCOORD1;
 		#elif TCP2_UV3_AS_NORMALS
 			float4 texcoord2 : TEXCOORD2;
@@ -189,6 +197,7 @@ Shader "Toony Colors Pro 2/User/My TCP2 Shader"
 			float4 screenPosition : TEXCOORD1;
 			float4 vcolor : TEXCOORD2;
 			float4 pack2 : TEXCOORD3; /* pack2.xyz = worldPos  pack2.w = ndl */
+			float2 pack3 : TEXCOORD4; /* pack3.xy = texcoord0 */
 			UNITY_VERTEX_OUTPUT_STEREO
 		};
 
@@ -199,6 +208,8 @@ Shader "Toony Colors Pro 2/User/My TCP2 Shader"
 			UNITY_SETUP_INSTANCE_ID(v);
 			UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(output);
 
+			// Texture Coordinates
+			output.pack3.xy = v.texcoord0.xy;
 			// Shader Properties Sampling
 			float __outlineWidth = ( _OutlineWidth );
 			float4 __outlineColorVertex = ( _OutlineColorVertex.rgba );
@@ -289,6 +300,8 @@ Shader "Toony Colors Pro 2/User/My TCP2 Shader"
 
 			// Shader Properties Sampling
 			float4 __outlineColor = ( float4(1,1,1,1) );
+			float __dissolveMap = ( TCP2_TEX2D_SAMPLE(_DissolveMap, _DissolveMap, input.pack3.xy).r );
+			float __dissolveValue = ( _DissolveValue );
 			float __verticalFogThreshold = ( _VerticalFogThreshold );
 			float __verticalFogSmoothness = ( _VerticalFogSmoothness );
 			float4 __verticalFogColor = ( _VerticalFogColor.rgba );
@@ -296,6 +309,14 @@ Shader "Toony Colors Pro 2/User/My TCP2 Shader"
 			half4 outlineColor = __outlineColor * input.vcolor.xyzw;
 			outlineColor *= input.pack2.w;
 
+			//Dissolve
+			#if defined(TCP2_DISSOLVE)
+			half dissolveMap = __dissolveMap;
+			half dissolveValue = __dissolveValue;
+			float dissValue = dissolveValue;
+			clip(dissolveMap - dissValue * 1.001);
+			#endif
+			
 			// Vertical Fog
 			half vertFogThreshold = input.pack2.xyz.y;
 			half verticalFogThreshold = __verticalFogThreshold;
@@ -324,6 +345,11 @@ Shader "Toony Colors Pro 2/User/My TCP2 Shader"
 
 		#pragma surface surf ToonyColorsCustom vertex:vertex_surface exclude_path:deferred exclude_path:prepass keepalpha addshadow dithercrossfade
 		#pragma target 3.0
+
+		//================================================================
+		// SHADER KEYWORDS
+
+		#pragma shader_feature_local_fragment TCP2_DISSOLVE
 
 		//================================================================
 		// STRUCTS
@@ -430,6 +456,8 @@ Shader "Toony Colors Pro 2/User/My TCP2 Shader"
 			float4 __albedo = ( TCP2_TEX2D_SAMPLE(_MainTex, _MainTex, input.texcoord0.xy).rgba );
 			float4 __mainColor = ( _Color.rgba );
 			float __alpha = ( __albedo.a * __mainColor.a );
+			float __dissolveMap = ( TCP2_TEX2D_SAMPLE(_DissolveMap, _DissolveMap, input.texcoord0.xy).r );
+			float __dissolveValue = ( _DissolveValue );
 			float3 __depthColor = ( _DepthColor.rgb );
 			float __depthColorDistance = ( _DepthColorDistance );
 			float3 __emission = ( _Emission.rgb );
@@ -483,6 +511,14 @@ Shader "Toony Colors Pro 2/User/My TCP2 Shader"
 			output.Albedo = __albedo.rgb;
 			output.Alpha = __alpha;
 
+			//Dissolve
+			#if defined(TCP2_DISSOLVE)
+			half dissolveMap = __dissolveMap;
+			half dissolveValue = __dissolveValue;
+			float dissValue = dissolveValue;
+			clip(dissolveMap - dissValue * 1.001);
+			#endif
+			
 			output.Albedo *= __mainColor.rgb;
 			
 			// Depth-based color
@@ -515,8 +551,6 @@ Shader "Toony Colors Pro 2/User/My TCP2 Shader"
 			stylizedThreshold -= 0.5;
 			stylizedThreshold *= surface.__stylizedThresholdScale;
 			ndl += stylizedThreshold;
-			// Apply attenuation (shadowmaps & point/spot lights attenuation)
-			ndl *= atten;
 			half3 ramp;
 			
 			#define		RAMP_THRESHOLD		surface.__rampThreshold
@@ -526,6 +560,8 @@ Shader "Toony Colors Pro 2/User/My TCP2 Shader"
 			ramp = smoothstep(RAMP_THRESHOLD - RAMP_SMOOTH*0.5, RAMP_THRESHOLD + RAMP_SMOOTH*0.5, ndl);
 			ramp = (round(ramp * RAMP_BANDS) / RAMP_BANDS) * step(ndl, 1);
 
+			// Apply attenuation (shadowmaps & point/spot lights attenuation)
+			ramp *= atten;
 			half4 sketch = surface.__progressiveSketchTexture;
 			half4 sketchWeights = half4(0,0,0,0);
 			half sketchStep = 1.0 / 5.0;
@@ -571,6 +607,7 @@ Shader "Toony Colors Pro 2/User/My TCP2 Shader"
 			#endif
 
 				//Subsurface Scattering
+			#if (POINT || SPOT)
 				half3 ssLight = lightDir + normal * surface.__subsurfaceDistortion;
 				half ssDot = pow(saturate(dot(viewDir, -ssLight)), surface.__subsurfacePower) * surface.__subsurfaceScale;
 				half3 ssColor = (ssDot * surface.__subsurfaceColor);
@@ -579,6 +616,7 @@ Shader "Toony Colors Pro 2/User/My TCP2 Shader"
 			#endif
 				ssColor *= lightColor;
 				color.rgb += surface.Albedo * ssColor;
+			#endif
 
 			// Vertical Fog
 			half vertFogThreshold = surface.input.worldPos.y;
@@ -707,6 +745,7 @@ Shader "Toony Colors Pro 2/User/My TCP2 Shader"
 			#pragma multi_compile _ TCP2_COLORS_AS_NORMALS TCP2_TANGENT_AS_NORMALS TCP2_UV1_AS_NORMALS TCP2_UV2_AS_NORMALS TCP2_UV3_AS_NORMALS TCP2_UV4_AS_NORMALS
 			#pragma multi_compile _ TCP2_UV_NORMALS_FULL TCP2_UV_NORMALS_ZW
 			#pragma multi_compile_instancing
+			#pragma shader_feature_local_fragment TCP2_DISSOLVE
 			ENDCG
 		}
 	}
@@ -714,5 +753,5 @@ Shader "Toony Colors Pro 2/User/My TCP2 Shader"
 	CustomEditor "ToonyColorsPro.ShaderGenerator.MaterialInspector_SG2"
 }
 
-/* TCP_DATA u config(ver:"2.9.9";unity:"2022.3.7f1";tmplt:"SG2_Template_Default";features:list["UNITY_5_4","UNITY_5_5","UNITY_5_6","UNITY_2017_1","UNITY_2018_1","UNITY_2018_2","UNITY_2018_3","UNITY_2019_1","UNITY_2019_2","UNITY_2019_3","UNITY_2019_4","UNITY_2020_1","UNITY_2021_1","UNITY_2021_2","UNITY_2022_2","SKETCH_PROGRESSIVE","DIFFUSE_TINT","TEXTURED_THRESHOLD","SHADOW_LINE","OUTLINE","OUTLINE_CLIP_SPACE","OUTLINE_LIGHTING_VERT","OUTLINE_LIGHTING","RAMP_BANDS_CRISP_NO_AA","EMISSION","SUBSURFACE_SCATTERING","OCCLUSION","BUMP_SCALE","PARALLAX","SILHOUETTE_STENCIL","VERTICAL_FOG","DEPTH_BUFFER_COLOR","CULLING","ZTEST","ZWRITE","ENABLE_LIGHTMAPS","ENABLE_FOG","DISABLE_BATCHING","ENABLE_LPPV","ENABLE_DITHER_LOD","BUMP","SS_ALL_LIGHTS","ATTEN_AT_NDL"];flags:list["addshadow"];flags_extra:dict[];keywords:dict[RENDER_TYPE="Opaque",RampTextureDrawer="[TCP2Gradient]",RampTextureLabel="Ramp Texture",SHADER_TARGET="3.0",BASEGEN_ALBEDO_DOWNSCALE="1",BASEGEN_MASKTEX_DOWNSCALE="1/2",BASEGEN_METALLIC_DOWNSCALE="1/4",BASEGEN_SPECULAR_DOWNSCALE="1/4",BASEGEN_DIFFUSEREMAPMIN_DOWNSCALE="1/4",BASEGEN_MASKMAPREMAPMIN_DOWNSCALE="1/4"];shaderProperties:list[,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,sp(name:"Face Culling";imps:list[imp_enum(value_type:0;value:2;enum_type:"ToonyColorsPro.ShaderGenerator.Culling";guid:"ba6ed26f-1db5-43f0-a9c8-1a7644ad00cf";op:Multiply;lbl:"Face Culling";gpu_inst:False;dots_inst:False;locked:False;impl_index:0)];layers:list[];unlocked:list[];layer_blend:dict[];custom_blend:dict[];clones:dict[];isClone:False)];customTextures:list[];codeInjection:codeInjection(injectedFiles:list[];mark:False);matLayers:list[]) */
-/* TCP_HASH 8db70c0042a3b12a930ece33df6ef428 */
+/* TCP_DATA u config(ver:"2.9.9";unity:"2022.3.7f1";tmplt:"SG2_Template_Default";features:list["UNITY_5_4","UNITY_5_5","UNITY_5_6","UNITY_2017_1","UNITY_2018_1","UNITY_2018_2","UNITY_2018_3","UNITY_2019_1","UNITY_2019_2","UNITY_2019_3","UNITY_2019_4","UNITY_2020_1","UNITY_2021_1","UNITY_2021_2","UNITY_2022_2","DIFFUSE_TINT","TEXTURED_THRESHOLD","OUTLINE","OUTLINE_CLIP_SPACE","OUTLINE_LIGHTING_VERT","OUTLINE_LIGHTING","RAMP_BANDS_CRISP_NO_AA","EMISSION","SUBSURFACE_SCATTERING","OCCLUSION","BUMP_SCALE","PARALLAX","SILHOUETTE_STENCIL","DISSOLVE_SHADER_FEATURE","VERTICAL_FOG","DEPTH_BUFFER_COLOR","CULLING","ZTEST","ZWRITE","ENABLE_LIGHTMAPS","ENABLE_FOG","DISABLE_BATCHING","ENABLE_LPPV","ENABLE_DITHER_LOD","DISSOLVE","DISSOLVE_CLIP","BUMP","SHADOW_LINE","SKETCH_PROGRESSIVE"];flags:list["addshadow"];flags_extra:dict[];keywords:dict[RENDER_TYPE="Opaque",RampTextureDrawer="[TCP2Gradient]",RampTextureLabel="Ramp Texture",SHADER_TARGET="3.0",BASEGEN_ALBEDO_DOWNSCALE="1",BASEGEN_MASKTEX_DOWNSCALE="1/2",BASEGEN_METALLIC_DOWNSCALE="1/4",BASEGEN_SPECULAR_DOWNSCALE="1/4",BASEGEN_DIFFUSEREMAPMIN_DOWNSCALE="1/4",BASEGEN_MASKMAPREMAPMIN_DOWNSCALE="1/4"];shaderProperties:list[,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,sp(name:"Face Culling";imps:list[imp_enum(value_type:0;value:2;enum_type:"ToonyColorsPro.ShaderGenerator.Culling";guid:"ba6ed26f-1db5-43f0-a9c8-1a7644ad00cf";op:Multiply;lbl:"Face Culling";gpu_inst:False;dots_inst:False;locked:False;impl_index:0)];layers:list[];unlocked:list[];layer_blend:dict[];custom_blend:dict[];clones:dict[];isClone:False)];customTextures:list[];codeInjection:codeInjection(injectedFiles:list[];mark:False);matLayers:list[]) */
+/* TCP_HASH 3ac4d9efc8adf9cd0d8aae39b53dc820 */
