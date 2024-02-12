@@ -6,6 +6,6 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/Diorama 2.unity
+    path: Assets/Scenes/Diorama.unity
     guid: bf34cdc3151549b409506411278beb32
   m_configObjects: {}

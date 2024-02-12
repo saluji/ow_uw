@@ -1,14 +1,164 @@
 fileFormatVersion: 2
-guid: 37c8eade49d509c44bda7c6529c33425
+guid: 04f78a23767ba9a419805208ffa5b993
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Ball OW
+    second: {fileID: 2100000, guid: bfdb048d672b86a4898adf3f1bf9950a, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Bench OW
+    second: {fileID: 2100000, guid: a32c4433c9b7e6b459c98c35b2ca0a83, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Field OW
+    second: {fileID: 2100000, guid: 98defa9606991f14583e36a06342a1c1, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Flower OW
+    second: {fileID: 2100000, guid: e828e42941814cc4f815ff2bac37da87, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Flower Stem OW
+    second: {fileID: 2100000, guid: d2d064c1f0581db4eb495e6caaf7fdbd, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Grass
+    second: {fileID: 2100000, guid: 987ad481da920e34ebb80f63b5a191d7, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: GroundOW
+    second: {fileID: 2100000, guid: f237f86fa1cce2f4e8231e2b2031c3bf, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Leaf
+    second: {fileID: 2100000, guid: 771193aa39207ec4592b6c3d29242e1e, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mace OW
+    second: {fileID: 2100000, guid: c7d2c0bded73a5e418c0b60d8d9859b9, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Mat.2
+    second: {fileID: 2100000, guid: d9f9dde5656f8b3469f3cd5f00a1f1ab, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Net OW
+    second: {fileID: 2100000, guid: fc0abd779c35b2b43afd671f4be8b79b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Number OW
+    second: {fileID: 2100000, guid: 231e431d165a56548811cda5a0be02a0, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: PantsOrc
+    second: {fileID: 2100000, guid: a87b252cce6768847bb2110edff78d30, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Scoreboard OW
+    second: {fileID: 2100000, guid: 199bf72bfeae8bf41a715edbed2e138d, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: ShoeBottom
+    second: {fileID: 2100000, guid: a2e7524d43118444c8d80e16f5e54f86, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: ShoeOrc2
+    second: {fileID: 2100000, guid: 1a79338e5b8fdcd42b9dade3a8ec1c45, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Skinorc2
+    second: {fileID: 2100000, guid: fd3847e7d895b4948882f339f7f66de8, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Staff OW
+    second: {fileID: 2100000, guid: aba4423931b1fdd48945856d4041b7cd, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Stand OW
+    second: {fileID: 2100000, guid: 77c888248572ca9438bc1883ad38ff7c, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Stem
+    second: {fileID: 2100000, guid: a2c9d52668d01334cbda7fc3724ddcf7, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Stone OW
+    second: {fileID: 2100000, guid: 8766290508616cc499fbf2b156e90bdb, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: String
+    second: {fileID: 2100000, guid: 6003e784fcdfac74cb22d5d4326291a5, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: TeethOrc
+    second: {fileID: 2100000, guid: 904489cd22cc8c2489c4775a36e2945f, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Tshirt ORC2
+    second: {fileID: 2100000, guid: 4aab87d63fa0ade499bd118a8fcee7a8, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Water
+    second: {fileID: 2100000, guid: 420058c3b2caf4d48929d51e22e2bb38, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: eyeOrc
+    second: {fileID: 2100000, guid: 9925c18829eda2f42913eb373cf4cbdd, type: 2}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Eye Fee_Color
+    second: {fileID: 2800000, guid: e218e1506eba49a46a5112d079851109, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: ShoeBottom_Farbe_1
+    second: {fileID: 2800000, guid: a68c67f85b5c8694bb477987b1886d28, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: ShortsFee_Color
+    second: {fileID: 2800000, guid: 5c9021ea6fe08d545be1c45ea7800064, type: 3}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: WingsFee_Farbe_1
+    second: {fileID: 2800000, guid: 3ebd91e416160884684fe9925b0f83ca, type: 3}
   materials:
     materialImportMode: 2
     materialName: 0
     materialSearch: 1
-    materialLocation: 1
+    materialLocation: 0
   animations:
     legacyGenerateAnimations: 4
     bakeSimulation: 0
