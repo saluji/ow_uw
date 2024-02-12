@@ -6,8 +6,9 @@
     "CustomOutputPath": "JMO Assets\\Toony Colors Pro\\Shaders Generated",
     "LastImplementationExportImportPath": "C:/Users/oudomvylay19908/Documents/GitHub/gameart/Project/Unity/GameArtProject/Assets",
     "OpenedFoldouts": [
-        "STYLIZATION",
-        "THIRD PARTY PLUGINS"
+        "THIRD PARTY PLUGINS",
+        "LIGHTING",
+        "STYLIZATION"
     ],
     "UseCustomFont": true,
     "CustomFont": {

@@ -11,14 +11,10 @@ Shader "Hidden/Toony Colors Pro 2/User/My TCP2 Shader Cope-AddPass"
 	{
 		[TCP2HeaderHelp(Base)]
 		_Color ("Color", Color) = (1,1,1,1)
-		[TCP2ColorNoAlpha] _HColor ("Highlight Color", Color) = (0.75,0.75,0.75,1)
-		[TCP2ColorNoAlpha] _SColor ("Shadow Color", Color) = (0.2,0.2,0.2,1)
+		[TCP2ColorNoAlpha] _HColor ("Highlight Color", Color) = (0.7735849,0.7735849,0.7735849,1)
+		[TCP2ColorNoAlpha] _SColor ("Shadow Color", Color) = (0.4150943,0.4150943,0.4150943,1)
 		[TCP2Separator]
 
-		[TCP2Header(Ramp Shading)]
-		_RampThreshold ("Threshold", Range(0.01,1)) = 0.5
-		_RampSmoothing ("Smoothing", Range(0.001,1)) = 0.5
-		[TCP2Separator]
 		[TCP2HeaderHelp(Terrain)]
 		[HideInInspector] TerrainMeta_maskMapTexture ("Mask Map", 2D) = "white" {}
 		[Toggle(_TERRAIN_INSTANCED_PERPIXEL_NORMAL)] _EnableInstancedPerPixelNormal("Enable Instanced per-pixel normal", Float) = 1.0
@@ -34,7 +30,6 @@ Shader "Hidden/Toony Colors Pro 2/User/My TCP2 Shader Cope-AddPass"
 		[TCP2Separator]
 		
 		[TCP2HeaderHelp(Sketch)]
-		[Toggle(TCP2_SKETCH)] _UseSketch ("Enable Sketch Effect", Float) = 0
 		_ProgressiveSketchTexture ("Progressive Texture", 2D) = "black" {}
 		_ProgressiveSketchSmoothness ("Progressive Smoothness", Range(0.005,0.5)) = 0.1
 		[TCP2Separator]
@@ -42,6 +37,8 @@ Shader "Hidden/Toony Colors Pro 2/User/My TCP2 Shader Cope-AddPass"
 		[TCP2HeaderHelp(Outline)]
 		_OutlineWidth ("Width", Range(0.1,4)) = 1
 		_OutlineColorVertex ("Color", Color) = (0,0,0,1)
+		
+		[TCP2Header(Outline Blending)]
 		// Outline Normals
 		[TCP2MaterialKeywordEnumNoPrefix(Regular, _, Vertex Colors, TCP2_COLORS_AS_NORMALS, Tangents, TCP2_TANGENT_AS_NORMALS, UV1, TCP2_UV1_AS_NORMALS, UV2, TCP2_UV2_AS_NORMALS, UV3, TCP2_UV3_AS_NORMALS, UV4, TCP2_UV4_AS_NORMALS)]
 		_NormalsSource ("Outline Normals Source", Float) = 0
@@ -187,8 +184,6 @@ Shader "Hidden/Toony Colors Pro 2/User/My TCP2 Shader Cope-AddPass"
 		float4 _Splat3_ST;
 		fixed4 _Color;
 		float4 _StylizedThreshold_ST;
-		float _RampThreshold;
-		float _RampSmoothing;
 		float4 _ProgressiveSketchTexture_ST;
 		float _ProgressiveSketchSmoothness;
 		fixed4 _HColor;
@@ -241,7 +236,7 @@ Shader "Hidden/Toony Colors Pro 2/User/My TCP2 Shader Cope-AddPass"
 		{
 			float4 vertex : SV_POSITION;
 			float4 vcolor : TEXCOORD0;
-			float pack1 : TEXCOORD1; /* pack1.x = ndl */
+			float3 pack1 : TEXCOORD1; /* pack1.xyz = normal */
 			UNITY_VERTEX_OUTPUT_STEREO
 		};
 
@@ -260,9 +255,7 @@ Shader "Hidden/Toony Colors Pro 2/User/My TCP2 Shader Cope-AddPass"
 			float __outlineWidth = ( _OutlineWidth );
 			float4 __outlineColorVertex = ( _OutlineColorVertex.rgba );
 
-			float3 objSpaceLight = normalize(mul(unity_WorldToObject, _WorldSpaceLightPos0).xyz);
-			half ndl = max(0, dot(v.normal.xyz, objSpaceLight.xyz));
-			output.pack1.x = ndl;
+			output.pack1.xyz = normalize(mul(unity_ObjectToWorld, v.normal).xyz);
 		
 		#ifdef TCP2_COLORS_AS_NORMALS
 			//Vertex Color for Normals
@@ -331,9 +324,12 @@ Shader "Hidden/Toony Colors Pro 2/User/My TCP2 Shader Cope-AddPass"
 
 			// Shader Properties Sampling
 			float4 __outlineColor = ( float4(1,1,1,1) );
+			float __outlineLightingWrapFactorFragment = ( 1.0 );
 
 			half4 outlineColor = __outlineColor * input.vcolor.xyzw;
-			outlineColor *= input.pack1.x;
+			half lightWrap = __outlineLightingWrapFactorFragment;
+			half ndl = max(0, (dot(input.pack1.xyz, _WorldSpaceLightPos0) + lightWrap) / (1 + lightWrap));
+			outlineColor *= ndl;
 
 			return outlineColor;
 		}
@@ -351,7 +347,7 @@ Shader "Hidden/Toony Colors Pro 2/User/My TCP2 Shader Cope-AddPass"
 			}
 			Cull Off
 			ZWrite Off
-			Blend Off
+			Blend SrcAlpha OneMinusSrcAlpha
 
 			CGPROGRAM
 
@@ -380,7 +376,6 @@ Shader "Hidden/Toony Colors Pro 2/User/My TCP2 Shader Cope-AddPass"
 
 		#pragma shader_feature_local _TERRAIN_INSTANCED_PERPIXEL_NORMAL
 		#pragma multi_compile_local_fragment __ _ALPHATEST_ON
-		#pragma shader_feature_local_fragment TCP2_SKETCH
 
 		//================================================================
 		// STRUCTS
@@ -423,8 +418,6 @@ Shader "Hidden/Toony Colors Pro 2/User/My TCP2 Shader Cope-AddPass"
 			// Shader Properties
 			float __stylizedThreshold;
 			float __stylizedThresholdScale;
-			float __rampThreshold;
-			float __rampSmoothing;
 			float4 __progressiveSketchTexture;
 			float __progressiveSketchSmoothness;
 			float3 __highlightColor;
@@ -474,8 +467,6 @@ Shader "Hidden/Toony Colors Pro 2/User/My TCP2 Shader Cope-AddPass"
 			float4 __mainColor = ( _Color.rgba );
 			output.__stylizedThreshold = ( TCP2_TEX2D_SAMPLE(_StylizedThreshold, _StylizedThreshold, input.texcoord0.xy * _StylizedThreshold_ST.xy + _StylizedThreshold_ST.zw).a );
 			output.__stylizedThresholdScale = ( 1.0 );
-			output.__rampThreshold = ( _RampThreshold );
-			output.__rampSmoothing = ( _RampSmoothing );
 			output.__progressiveSketchTexture = ( TCP2_TEX2D_SAMPLE(_ProgressiveSketchTexture, _ProgressiveSketchTexture, screenUV * _ScreenParams.zw * _ProgressiveSketchTexture_ST.xy + _ProgressiveSketchTexture_ST.zw).rgba );
 			output.__progressiveSketchSmoothness = ( _ProgressiveSketchSmoothness );
 			output.__highlightColor = ( _HColor.rgb );
@@ -589,16 +580,11 @@ Shader "Hidden/Toony Colors Pro 2/User/My TCP2 Shader Cope-AddPass"
 			ndl += stylizedThreshold;
 			half3 ramp;
 			
-			#define		RAMP_THRESHOLD	surface.__rampThreshold
-			#define		RAMP_SMOOTH		surface.__rampSmoothing
 			ndl = saturate(ndl);
-			ramp = smoothstep(RAMP_THRESHOLD - RAMP_SMOOTH*0.5, RAMP_THRESHOLD + RAMP_SMOOTH*0.5, ndl);
+			ramp = ndl.xxx;
 
 			// Apply attenuation (shadowmaps & point/spot lights attenuation)
 			ramp *= atten;
-			
-			// Sketch
-			#if defined(TCP2_SKETCH)
 			half4 sketch = surface.__progressiveSketchTexture;
 			half4 sketchWeights = half4(0,0,0,0);
 			half sketchStep = 1.0 / 5.0;
@@ -609,8 +595,6 @@ Shader "Hidden/Toony Colors Pro 2/User/My TCP2 Shader Cope-AddPass"
 			sketchWeights.r = smoothstep(sketchStep*4 + sketchSmooth, sketchStep*4 - sketchSmooth, ramp) - sketchWeights.a - sketchWeights.b - sketchWeights.g;
 			half combinedSketch = 1.0 - dot(sketch, sketchWeights);
 			
-			#endif
-
 			// Highlight/Shadow Colors
 			#if !defined(UNITY_PASS_FORWARDBASE)
 				ramp = lerp(half3(0,0,0), surface.__highlightColor, ramp);
@@ -632,9 +616,7 @@ Shader "Hidden/Toony Colors Pro 2/User/My TCP2 Shader Cope-AddPass"
 			half4 color;
 			color.rgb = surface.Albedo * lightColor.rgb * ramp;
 			color.a = surface.Alpha;
-			#if defined(TCP2_SKETCH)
 			color.rgb *= combinedSketch;
-			#endif
 
 			// Apply indirect lighting (ambient)
 			half occlusion = 1;
@@ -642,9 +624,7 @@ Shader "Hidden/Toony Colors Pro 2/User/My TCP2 Shader Cope-AddPass"
 				half3 ambient = gi.indirect.diffuse;
 				ambient *= surface.Albedo * occlusion * surface.__ambientIntensity;
 
-				#if defined(TCP2_SKETCH)
 				ambient.rgb *= combinedSketch;
-				#endif
 				color.rgb += ambient;
 			#endif
 

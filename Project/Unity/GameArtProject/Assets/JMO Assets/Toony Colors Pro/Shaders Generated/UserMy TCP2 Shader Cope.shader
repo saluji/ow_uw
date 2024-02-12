@@ -7,16 +7,15 @@ Shader "Toony Colors Pro 2/User/My TCP2 Shader Cope"
 	{
 		[TCP2HeaderHelp(Base)]
 		_Color ("Color", Color) = (1,1,1,1)
-		[TCP2ColorNoAlpha] _HColor ("Highlight Color", Color) = (0.6886792,0.6886792,0.6886792,1)
-		[TCP2ColorNoAlpha] _SColor ("Shadow Color", Color) = (0.2,0.2,0.2,1)
+		[TCP2ColorNoAlpha] _HColor ("Highlight Color", Color) = (0.735849,0.735849,0.735849,1)
+		[TCP2ColorNoAlpha] _SColor ("Shadow Color", Color) = (0.3584906,0.3584906,0.3584906,1)
 		[MainTexture] _MainTex ("Albedo", 2D) = "white" {}
 		[TCP2Separator]
 
-		[TCP2HeaderHelp(Subsurface Scattering)]
-		_SubsurfaceDistortion ("Distortion", Range(0,2)) = 0.2
-		_SubsurfacePower ("Power", Range(0.1,16)) = 3
-		_SubsurfaceScale ("Scale", Float) = 1
-		[TCP2ColorNoAlpha] _SubsurfaceColor ("Color", Color) = (0.5,0.5,0.5,1)
+		[TCP2Header(Ramp Shading)]
+		_RampThreshold ("Threshold", Range(0.01,1)) = 0.5
+		_RampSmoothing ("Smoothing", Range(0.001,1)) = 0.5
+		[IntRange] _BandsCount ("Bands Count", Range(1,20)) = 4
 		[TCP2Separator]
 		[HideInInspector] __BeginGroup_ShadowHSV ("Shadow Line", Float) = 0
 		_ShadowLineThreshold ("Threshold", Range(0,1)) = 0.5
@@ -29,7 +28,6 @@ Shader "Toony Colors Pro 2/User/My TCP2 Shader Cope"
 		[TCP2Separator]
 		
 		[TCP2HeaderHelp(Sketch)]
-		[Toggle(TCP2_SKETCH)] _UseSketch ("Enable Sketch Effect", Float) = 0
 		_ProgressiveSketchTexture ("Progressive Texture", 2D) = "black" {}
 		_ProgressiveSketchSmoothness ("Progressive Smoothness", Range(0.005,0.5)) = 0.1
 		[TCP2Separator]
@@ -78,6 +76,9 @@ Shader "Toony Colors Pro 2/User/My TCP2 Shader Cope"
 		float4 _MainTex_ST;
 		fixed4 _Color;
 		float4 _StylizedThreshold_ST;
+		float _RampThreshold;
+		float _RampSmoothing;
+		float _BandsCount;
 		float4 _ProgressiveSketchTexture_ST;
 		float _ProgressiveSketchSmoothness;
 		fixed4 _HColor;
@@ -86,10 +87,6 @@ Shader "Toony Colors Pro 2/User/My TCP2 Shader Cope"
 		float _ShadowLineStrength;
 		float _ShadowLineSmoothing;
 		fixed4 _ShadowLineColor;
-		float _SubsurfaceDistortion;
-		float _SubsurfacePower;
-		float _SubsurfaceScale;
-		fixed4 _SubsurfaceColor;
 
 		// Cubic pulse function
 		// Adapted from: http://www.iquilezles.org/www/articles/functions/functions.htm (c) 2017 - Inigo Quilez - MIT License
@@ -135,7 +132,7 @@ Shader "Toony Colors Pro 2/User/My TCP2 Shader Cope"
 		{
 			float4 vertex : SV_POSITION;
 			float4 vcolor : TEXCOORD0;
-			float pack1 : TEXCOORD1; /* pack1.x = ndl */
+			float3 pack1 : TEXCOORD1; /* pack1.xyz = normal */
 			UNITY_VERTEX_OUTPUT_STEREO
 		};
 
@@ -147,14 +144,10 @@ Shader "Toony Colors Pro 2/User/My TCP2 Shader Cope"
 			UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(output);
 
 			// Shader Properties Sampling
-			float __outlineLightingWrapFactorVertex = ( 1.0 );
 			float __outlineWidth = ( _OutlineWidth );
 			float4 __outlineColorVertex = ( _OutlineColorVertex.rgba );
 
-			float3 objSpaceLight = normalize(mul(unity_WorldToObject, _WorldSpaceLightPos0).xyz);
-			half lightWrap = __outlineLightingWrapFactorVertex;
-			half ndl = max(0, (dot(v.normal.xyz, objSpaceLight.xyz) + lightWrap) / (1 + lightWrap));
-			output.pack1.x = ndl;
+			output.pack1.xyz = normalize(mul(unity_ObjectToWorld, v.normal).xyz);
 		
 		#ifdef TCP2_COLORS_AS_NORMALS
 			//Vertex Color for Normals
@@ -223,9 +216,12 @@ Shader "Toony Colors Pro 2/User/My TCP2 Shader Cope"
 
 			// Shader Properties Sampling
 			float4 __outlineColor = ( float4(1,1,1,1) );
+			float __outlineLightingWrapFactorFragment = ( 1.0 );
 
 			half4 outlineColor = __outlineColor * input.vcolor.xyzw;
-			outlineColor *= input.pack1.x;
+			half lightWrap = __outlineLightingWrapFactorFragment;
+			half ndl = max(0, (dot(input.pack1.xyz, _WorldSpaceLightPos0) + lightWrap) / (1 + lightWrap));
+			outlineColor *= ndl;
 
 			return outlineColor;
 		}
@@ -243,7 +239,6 @@ Shader "Toony Colors Pro 2/User/My TCP2 Shader Cope"
 			}
 			Cull Off
 			ZWrite Off
-			Blend Off
 
 			CGPROGRAM
 
@@ -266,11 +261,6 @@ Shader "Toony Colors Pro 2/User/My TCP2 Shader Cope"
 		#pragma target 3.0
 
 		//================================================================
-		// SHADER KEYWORDS
-
-		#pragma shader_feature_local_fragment TCP2_SKETCH
-
-		//================================================================
 		// STRUCTS
 
 		// Vertex input
@@ -289,7 +279,6 @@ Shader "Toony Colors Pro 2/User/My TCP2 Shader Cope"
 
 		struct Input
 		{
-			half3 viewDir;
 			float4 screenPosition;
 			float2 texcoord0;
 		};
@@ -312,6 +301,9 @@ Shader "Toony Colors Pro 2/User/My TCP2 Shader Cope"
 			// Shader Properties
 			float __stylizedThreshold;
 			float __stylizedThresholdScale;
+			float __rampThreshold;
+			float __rampSmoothing;
+			float __bandsCount;
 			float4 __progressiveSketchTexture;
 			float __progressiveSketchSmoothness;
 			float3 __highlightColor;
@@ -321,10 +313,6 @@ Shader "Toony Colors Pro 2/User/My TCP2 Shader Cope"
 			float __shadowLineSmoothing;
 			float4 __shadowLineColor;
 			float __ambientIntensity;
-			float __subsurfaceDistortion;
-			float __subsurfacePower;
-			float __subsurfaceScale;
-			float3 __subsurfaceColor;
 		};
 
 		//================================================================
@@ -359,6 +347,9 @@ Shader "Toony Colors Pro 2/User/My TCP2 Shader Cope"
 			float __alpha = ( __albedo.a * __mainColor.a );
 			output.__stylizedThreshold = ( TCP2_TEX2D_SAMPLE(_StylizedThreshold, _StylizedThreshold, input.texcoord0.xy * _StylizedThreshold_ST.xy + _StylizedThreshold_ST.zw).a );
 			output.__stylizedThresholdScale = ( 1.0 );
+			output.__rampThreshold = ( _RampThreshold );
+			output.__rampSmoothing = ( _RampSmoothing );
+			output.__bandsCount = ( _BandsCount );
 			output.__progressiveSketchTexture = ( TCP2_TEX2D_SAMPLE(_ProgressiveSketchTexture, _ProgressiveSketchTexture, screenUV * _ScreenParams.zw * _ProgressiveSketchTexture_ST.xy + _ProgressiveSketchTexture_ST.zw).rgba );
 			output.__progressiveSketchSmoothness = ( _ProgressiveSketchSmoothness );
 			output.__highlightColor = ( _HColor.rgb );
@@ -368,10 +359,6 @@ Shader "Toony Colors Pro 2/User/My TCP2 Shader Cope"
 			output.__shadowLineSmoothing = ( _ShadowLineSmoothing );
 			output.__shadowLineColor = ( _ShadowLineColor.rgba );
 			output.__ambientIntensity = ( 1.0 );
-			output.__subsurfaceDistortion = ( _SubsurfaceDistortion );
-			output.__subsurfacePower = ( _SubsurfacePower );
-			output.__subsurfaceScale = ( _SubsurfaceScale );
-			output.__subsurfaceColor = ( _SubsurfaceColor.rgb );
 
 			output.input = input;
 
@@ -385,7 +372,7 @@ Shader "Toony Colors Pro 2/User/My TCP2 Shader Cope"
 		//================================================================
 		// LIGHTING FUNCTION
 
-		inline half4 LightingToonyColorsCustom(inout SurfaceOutputCustom surface, half3 viewDir, UnityGI gi)
+		inline half4 LightingToonyColorsCustom(inout SurfaceOutputCustom surface, UnityGI gi)
 		{
 
 			half3 lightDir = gi.light.dir;
@@ -406,14 +393,15 @@ Shader "Toony Colors Pro 2/User/My TCP2 Shader Cope"
 			ndl += stylizedThreshold;
 			half3 ramp;
 			
+			#define		RAMP_THRESHOLD		surface.__rampThreshold
+			#define		RAMP_SMOOTH			surface.__rampSmoothing
+			#define		RAMP_BANDS			surface.__bandsCount
 			ndl = saturate(ndl);
-			ramp = ndl.xxx;
+			ramp = smoothstep(RAMP_THRESHOLD - RAMP_SMOOTH*0.5, RAMP_THRESHOLD + RAMP_SMOOTH*0.5, ndl);
+			ramp = (round(ramp * RAMP_BANDS) / RAMP_BANDS) * step(ndl, 1);
 
 			// Apply attenuation (shadowmaps & point/spot lights attenuation)
 			ramp *= atten;
-			
-			// Sketch
-			#if defined(TCP2_SKETCH)
 			half4 sketch = surface.__progressiveSketchTexture;
 			half4 sketchWeights = half4(0,0,0,0);
 			half sketchStep = 1.0 / 5.0;
@@ -424,8 +412,6 @@ Shader "Toony Colors Pro 2/User/My TCP2 Shader Cope"
 			sketchWeights.r = smoothstep(sketchStep*4 + sketchSmooth, sketchStep*4 - sketchSmooth, ramp) - sketchWeights.a - sketchWeights.b - sketchWeights.g;
 			half combinedSketch = 1.0 - dot(sketch, sketchWeights);
 			
-			#endif
-
 			// Highlight/Shadow Colors
 			#if !defined(UNITY_PASS_FORWARDBASE)
 				ramp = lerp(half3(0,0,0), surface.__highlightColor, ramp);
@@ -447,9 +433,7 @@ Shader "Toony Colors Pro 2/User/My TCP2 Shader Cope"
 			half4 color;
 			color.rgb = surface.Albedo * lightColor.rgb * ramp;
 			color.a = surface.Alpha;
-			#if defined(TCP2_SKETCH)
 			color.rgb *= combinedSketch;
-			#endif
 
 			// Apply indirect lighting (ambient)
 			half occlusion = 1;
@@ -457,21 +441,8 @@ Shader "Toony Colors Pro 2/User/My TCP2 Shader Cope"
 				half3 ambient = gi.indirect.diffuse;
 				ambient *= surface.Albedo * occlusion * surface.__ambientIntensity;
 
-				#if defined(TCP2_SKETCH)
 				ambient.rgb *= combinedSketch;
-				#endif
 				color.rgb += ambient;
-			#endif
-
-				//Subsurface Scattering
-			#if (POINT || SPOT)
-				half3 ssLight = lightDir + normal * surface.__subsurfaceDistortion;
-				half ssDot = pow(saturate(dot(viewDir, -ssLight)), surface.__subsurfacePower) * surface.__subsurfaceScale;
-				half3 ssColor = (ssDot * surface.__subsurfaceColor);
-			#if !defined(UNITY_PASS_FORWARDBASE)
-				ssColor *= atten;
-			#endif
-				color.rgb *= surface.Albedo * ssColor;
 			#endif
 
 			return color;
@@ -520,5 +491,5 @@ Shader "Toony Colors Pro 2/User/My TCP2 Shader Cope"
 	CustomEditor "ToonyColorsPro.ShaderGenerator.MaterialInspector_SG2"
 }
 
-/* TCP_DATA u config(ver:"2.9.9";unity:"2022.3.7f1";tmplt:"SG2_Template_Default";features:list["UNITY_5_4","UNITY_5_5","UNITY_5_6","UNITY_2017_1","UNITY_2018_1","UNITY_2018_2","UNITY_2018_3","UNITY_2019_1","UNITY_2019_2","UNITY_2019_3","UNITY_2019_4","UNITY_2020_1","UNITY_2021_1","UNITY_2021_2","UNITY_2022_2","SKETCH_SHADER_FEATURE","SKETCH_AMBIENT","TEXTURED_THRESHOLD","SHADOW_LINE","SHADOW_LINE_CRISP_AA","OUTLINE","OUTLINE_OPAQUE","OUTLINE_LIGHTING_VERT","OUTLINE_LIGHTING","OUTLINE_DEPTH","OUTLINE_BEHIND_DEPTH","SKETCH_PROGRESSIVE","SKETCH_PROGRESSIVE_SMOOTH","NO_RAMP","RIM_DIR_PERSP_CORRECTION","SUBSURFACE_SCATTERING","SS_NO_LIGHTCOLOR","SS_MULTIPLICATIVE","REFL_ROUGH","REFLECTION_FRESNEL","RIM_DIR","PARALLAX","OUTLINE_LIGHTING_WRAP"];flags:list[];flags_extra:dict[pragma_gpu_instancing=list[]];keywords:dict[RENDER_TYPE="Opaque",RampTextureDrawer="[TCP2Gradient]",RampTextureLabel="Ramp Texture",SHADER_TARGET="3.0",BASEGEN_ALBEDO_DOWNSCALE="1",BASEGEN_MASKTEX_DOWNSCALE="1/2",BASEGEN_METALLIC_DOWNSCALE="1/4",BASEGEN_SPECULAR_DOWNSCALE="1/4",BASEGEN_DIFFUSEREMAPMIN_DOWNSCALE="1/4",BASEGEN_MASKMAPREMAPMIN_DOWNSCALE="1/4",RIM_LABEL="Rim Lighting"];shaderProperties:list[,,,,sp(name:"Highlight Color";imps:list[imp_mp_color(def:RGBA(0.6886792, 0.6886792, 0.6886792, 1);hdr:False;cc:3;chan:"RGB";prop:"_HColor";md:"";gbv:False;custom:False;refs:"";pnlock:False;guid:"b49051e0-d77e-4ed6-b4ce-a4055686f475";op:Multiply;lbl:"Highlight Color";gpu_inst:False;dots_inst:False;locked:False;impl_index:0)];layers:list[];unlocked:list[];layer_blend:dict[];custom_blend:dict[];clones:dict[];isClone:False)];customTextures:list[];codeInjection:codeInjection(injectedFiles:list[];mark:False);matLayers:list[]) */
-/* TCP_HASH 2e49f95b5241e66cd8dfd5c24893e6d4 */
+/* TCP_DATA u config(ver:"2.9.9";unity:"2022.3.7f1";tmplt:"SG2_Template_Default";features:list["UNITY_5_4","UNITY_5_5","UNITY_5_6","UNITY_2017_1","UNITY_2018_1","UNITY_2018_2","UNITY_2018_3","UNITY_2019_1","UNITY_2019_2","UNITY_2019_3","UNITY_2019_4","UNITY_2020_1","UNITY_2021_1","UNITY_2021_2","UNITY_2022_2","OUTLINE","OUTLINE_DEPTH","OUTLINE_BEHIND_DEPTH","RIM_DIR_PERSP_CORRECTION","REFL_ROUGH","REFLECTION_FRESNEL","PARALLAX","OUTLINE_LIGHTING","OUTLINE_LIGHTING_FRAG","OUTLINE_LIGHTING_WRAP","RAMP_BANDS_CRISP_NO_AA","SHADOW_HSV_MASK","SHADOW_LINE","SHADOW_LINE_CRISP_AA","TEXTURED_THRESHOLD","SKETCH_PROGRESSIVE","SKETCH_AMBIENT","SKETCH_PROGRESSIVE_SMOOTH"];flags:list[];flags_extra:dict[pragma_gpu_instancing=list[]];keywords:dict[RENDER_TYPE="Opaque",RampTextureDrawer="[TCP2Gradient]",RampTextureLabel="Ramp Texture",SHADER_TARGET="3.0",BASEGEN_ALBEDO_DOWNSCALE="1",BASEGEN_MASKTEX_DOWNSCALE="1/2",BASEGEN_METALLIC_DOWNSCALE="1/4",BASEGEN_SPECULAR_DOWNSCALE="1/4",BASEGEN_DIFFUSEREMAPMIN_DOWNSCALE="1/4",BASEGEN_MASKMAPREMAPMIN_DOWNSCALE="1/4",RIM_LABEL="Rim Outline"];shaderProperties:list[,,,,,,,sp(name:"Highlight Color";imps:list[imp_mp_color(def:RGBA(0.735849, 0.735849, 0.735849, 1);hdr:False;cc:3;chan:"RGB";prop:"_HColor";md:"";gbv:False;custom:False;refs:"";pnlock:False;guid:"b49051e0-d77e-4ed6-b4ce-a4055686f475";op:Multiply;lbl:"Highlight Color";gpu_inst:False;dots_inst:False;locked:False;impl_index:0)];layers:list[];unlocked:list[];layer_blend:dict[];custom_blend:dict[];clones:dict[];isClone:False),sp(name:"Shadow Color";imps:list[imp_mp_color(def:RGBA(0.3584906, 0.3584906, 0.3584906, 1);hdr:False;cc:3;chan:"RGB";prop:"_SColor";md:"";gbv:False;custom:False;refs:"";pnlock:False;guid:"234d721b-dee3-44b5-b48a-c3db0438f1cc";op:Multiply;lbl:"Shadow Color";gpu_inst:False;dots_inst:False;locked:False;impl_index:0)];layers:list[];unlocked:list[];layer_blend:dict[];custom_blend:dict[];clones:dict[];isClone:False)];customTextures:list[];codeInjection:codeInjection(injectedFiles:list[];mark:False);matLayers:list[]) */
+/* TCP_HASH a0bc3aa5afee19ce0dc1e2638d25099b */
